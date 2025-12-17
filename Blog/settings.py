@@ -67,7 +67,7 @@ STATIC_URL = 'static/'
 
 # 登录相关的配置
 LOGIN_URL = 'login'          # 未登录用户访问受限页面时跳转的URL
-LOGIN_REDIRECT_URL = 'index' # 登录成功后跳转到首页
-LOGOUT_REDIRECT_URL = 'index' # 登出后跳转到首页
+LOGIN_REDIRECT_URL = 'blogs:index' # 登录成功后跳转到首页
+LOGOUT_REDIRECT_URL = 'blogs:index' # 登出后跳转到首页
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
