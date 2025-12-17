@@ -1,28 +1,140 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8 offset-md-2">
-        <h2 class="mb-4 pb-2 border-bottom">最新博文</h2>
+
+<style>
+    .page-title {
+        text-align: center;
+        color: var(--grass-green);
+        margin-bottom: 30px;
+        font-size: 2rem;
+        text-shadow: 2px 2px var(--cyan-light);
+    }
+
+    /* --- 博文卡片样式 --- */
+    .post-card {
+        background-color: var(--white);
+        border-radius: 20px;
+        /* 使用双重边框模拟波浪或缝纫效果 */
+        border: 4px dashed var(--mint-light); 
+        padding: 25px;
+        margin-bottom: 25px;
+        position: relative;
+        box-shadow: 0 5px 0 rgba(152, 251, 152, 0.5); /* 硬阴影，更有卡通感 */
         
-        {% for post in posts %}
-            <div class="card mb-3 shadow-sm">
-                <div class="card-body">
-                    <h3 class="card-title text-primary">{{ post.title }}</h3>
-                    <h6 class="card-subtitle mb-2 text-muted">
-                        作者: {{ post.author.username }} | 时间: {{ post.date_added|date:"Y-m-d H:i" }}
-                    </h6>
-                    <p class="card-text mt-3">{{ post.text|linebreaks|truncatechars:100 }}</p>
-                    
-                    <!-- 仅作者可见编辑按钮 -->
-                    {% if user == post.author %}
-                        <a href="{% url 'blogs:edit_blog' post.id %}" class="btn btn-sm btn-outline-secondary">编辑</a>
-                    {% endif %}
-                </div>
-            </div>
-        {% empty %}
-            <div class="alert alert-info">暂时没有博文，快去发布第一篇吧！</div>
-        {% endfor %}
+        /* 初始状态：透明且下移，为动画做准备 */
+        opacity: 0;
+        transform: translateY(50px);
+        animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    /* 鼠标悬停效果：晃动 + 边框变色 */
+    .post-card:hover {
+        border-color: var(--grass-green);
+        box-shadow: 0 8px 0 rgba(50, 205, 50, 0.3);
+        animation: shake 0.5s ease-in-out; /* 注意：这里会覆盖掉 slideUp，所以仅hover触发 */
+        animation-fill-mode: none; /* 防止晃动后状态卡死 */
+        opacity: 1; /* 保持可见 */
+        transform: translateY(0); /* 保持位置 */
+    }
+
+    /* --- 动画定义 --- */
+    @keyframes slideUp {
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes shake {
+        0% { transform: rotate(0deg); }
+        25% { transform: rotate(1deg); }
+        50% { transform: rotate(0deg); }
+        75% { transform: rotate(-1deg); }
+        100% { transform: rotate(0deg); }
+    }
+
+    /* 标题样式 */
+    .card-title {
+        color: var(--dark-green);
+        font-size: 1.4rem;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* 信息栏 */
+    .card-meta {
+        font-size: 0.85rem;
+        color: #88c;
+        background: var(--cyan-light);
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 15px;
+        margin-bottom: 15px;
+    }
+
+    .card-text {
+        line-height: 1.6;
+        color: #555;
+    }
+
+    /* 糖果按钮 */
+    .btn-read-more, .btn-edit {
+        display: inline-block;
+        margin-top: 15px;
+        padding: 8px 25px;
+        background: linear-gradient(to bottom, #fff, var(--mint-bg));
+        border: 2px solid var(--mint-light);
+        border-radius: 50px;
+        color: var(--grass-green);
+        text-decoration: none;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+    .btn-read-more:hover {
+        background: var(--mint-light);
+        color: var(--white);
+        box-shadow: 0 0 10px var(--mint-light);
+    }
+    
+    .btn-edit {
+        border-color: #ffd700;
+        color: #daa520;
+    }
+    .btn-edit:hover {
+        background: #ffd700;
+        color: #fff;
+    }
+</style>
+
+<h2 class="page-title">🍃 最新日记 🍃</h2>
+
+{% for post in posts %}
+    <!-- 使用 style 动态计算动画延迟，形成级联效果 -->
+    <div class="post-card" style="animation-delay: {{ forloop.counter0|add:1 }}00ms">
+        <h3 class="card-title">🌿 {{ post.title }}</h3>
+        
+        <div class="card-meta">
+            👤 {{ post.author.username }} &nbsp;|&nbsp; 🕒 {{ post.date_added|date:"Y-m-d" }}
+        </div>
+        
+        <div class="card-text">
+            {{ post.text|linebreaks|truncatechars:80 }}
+        </div>
+
+        <!-- 装饰性分割线 -->
+        <div style="margin-top:10px; border-top: 2px dotted #eee;"></div>
+
+        <a href="#" class="btn-read-more">🍬 点击查看全文</a>
+        
+        {% if user == post.author %}
+            <a href="{% url 'blogs:edit_blog' post.id %}" class="btn-edit">✏️ 修改</a>
+        {% endif %}
     </div>
-</div>
+{% empty %}
+    <div class="post-card" style="text-align: center; color: #999;">
+        <p>🍂 这里空空如也，快去种下第一篇日记吧！</p>
+    </div>
+{% endfor %}
+
 {% endblock content %}
