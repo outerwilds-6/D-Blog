@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h2 class="mb-4 pb-2 border-bottom">最新博文</h2>
+        
+        {% for post in posts %}
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title text-primary">{{ post.title }}</h3>
+                    <h6 class="card-subtitle mb-2 text-muted">
+                        作者: {{ post.author.username }} | 时间: {{ post.date_added|date:"Y-m-d H:i" }}
+                    </h6>
+                    <p class="card-text mt-3">{{ post.text|linebreaks|truncatechars:100 }}</p>
+                    
+                    <!-- 仅作者可见编辑按钮 -->
+                    {% if user == post.author %}
+                        <a href="{% url 'blogs:edit_blog' post.id %}" class="btn btn-sm btn-outline-secondary">编辑</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <div class="alert alert-info">暂时没有博文，快去发布第一篇吧！</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content %}

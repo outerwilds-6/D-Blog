@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                {{ title }}
+            </div>
+            <div class="card-body">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <!-- 使用Bootstrap样式渲染表单 -->
+                    {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label">{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.errors %}
+                                <div class="text-danger small">{{ field.errors }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-success w-100">保存</button>
+                    <!-- 隐藏的next参数用于跳转 -->
+                    <input type="hidden" name="next" value="{% url 'blogs:index' %}" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
