@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌿 萌萌哒博客 🌿</title>
+    <title>🌿 净善宫 🌿</title>
     <style>
         /* --- 全局变量定义：清新绿色系 --- */
         :root {
@@ -150,12 +150,12 @@
     <nav class="navbar">
         <div class="brand-box">
             <div class="plant-icon">🌱</div>
-            <a href="{% url 'blogs:index' %}" class="brand-link">Django Garden</a>
+            <a href="{% url 'blogs:index' %}" class="brand-link">虚空终端</a>
         </div>
         <div class="nav-links">
             {% if user.is_authenticated %}
                 <span class="user-greet">Hi, {{ user.username }} 🍃</span>
-                <a href="{% url 'blogs:new_blog' %}" class="nav-btn">➕ 写日记</a>
+                <a href="{% url 'blogs:new_blog' %}" class="nav-btn">➕ 记录</a>
                 <form action="{% url 'logout' %}" method="post" class="logout-form">
                     {% csrf_token %}
                     <button type="submit" class="nav-btn" style="color: #ff8888;">注销</button>
@@ -172,7 +172,7 @@
     </div>
 
     <footer>
-        <p>🍃 CopyLeft 2025 Django Blog | Made with 💚 and Python 🍃</p>
+        <p>🍃 CopyLeft 2025 Django Blog | A Nahida themed blog made with Python 🍃</p>
     </footer>
 
 </body>
