@@ -9,12 +9,13 @@
         /* --- 全局变量定义：清新绿色系 --- */
         :root {
             --mint-light: #98FB98;   /* 薄荷绿 */
-            --mint-bg: #F0FFF0;      /* 蜜露白（极淡绿） */
+            --mint-bg: #F0FFF0;      /* 蜜露白 */
             --grass-green: #32CD32;  /* 草绿 */
-            --dark-green: #2E8B57;   /* 海洋绿（用于文字） */
+            --dark-green: #2E8B57;   /* 海洋绿 */
             --cyan-light: #E0FFFF;   /* 浅青色 */
             --white: #FFFFFF;
-            --font-cute: "Comic Sans MS", "Chalkboard SE", "Mali", "YouYuan", sans-serif; /* 可爱字体栈 */
+            --font-cute: "Comic Sans MS", "Chalkboard SE", "Mali", "YouYuan", sans-serif;
+            --shadow-soft: 0 10px 25px rgba(50, 205, 50, 0.15);
         }
 
         /* --- 基础重置 --- */
@@ -31,20 +32,20 @@
             overflow-x: hidden;
         }
 
-        /* --- 背景图处理：固定+半透明 --- */
+        /* 背景图 */
         body::before {
             content: "";
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: url("{% static 'images/blog_bg.png' %}") repeat;
-            opacity: 0.15; /* 调整透明度，让文字清晰 */
+            opacity: 0.15;
             z-index: -1;
             pointer-events: none;
         }
 
-        /* --- 导航栏样式 --- */
+        /* --- 导航栏 --- */
         .navbar {
-            background-color: rgba(152, 251, 152, 0.9); /* 薄荷绿半透明 */
+            background-color: rgba(152, 251, 152, 0.95);
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
@@ -52,16 +53,12 @@
             box-shadow: 0 4px 15px rgba(50, 205, 50, 0.2);
             position: sticky;
             top: 0;
-            z-index: 100;
-            border-bottom: 3px dashed var(--white); /* 缝纫线效果 */
+            z-index: 1000; /* 确保在最上层 */
+            border-bottom: 3px dashed var(--white);
+            backdrop-filter: blur(5px);
         }
 
-        .brand-box {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .brand-box { display: flex; align-items: center; gap: 10px; }
         .brand-link {
             font-size: 1.5rem;
             font-weight: bold;
@@ -70,38 +67,27 @@
             text-shadow: 2px 2px 0px var(--grass-green);
         }
 
-        /* 悬浮小绿植动画 */
-        .plant-icon {
-            font-size: 1.8rem;
-            animation: float 3s ease-in-out infinite;
-        }
+        .plant-icon { font-size: 1.8rem; animation: float 3s ease-in-out infinite; }
         @keyframes float {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-5px) rotate(10deg); }
         }
 
-        .nav-links {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        /* 胶囊按钮 */
+        .nav-links { display: flex; gap: 15px; align-items: center; }
         .nav-btn {
             background-color: var(--white);
             color: var(--grass-green);
             padding: 8px 20px;
-            border-radius: 50px; /* 胶囊状 */
+            border-radius: 50px;
             text-decoration: none;
             font-weight: bold;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 弹性过渡 */
+            transition: all 0.3s;
             border: 2px solid transparent;
         }
-
         .nav-btn:hover {
             background-color: var(--grass-green);
             color: var(--white);
-            transform: scale(1.1); /* 放大 */
+            transform: scale(1.1);
             box-shadow: 0 5px 15px rgba(50, 205, 50, 0.4);
         }
 
@@ -111,21 +97,16 @@
             border-radius: 20px;
             font-size: 0.9rem;
             border: 1px solid var(--mint-light);
+            display: none; /* 移动端默认隐藏，大屏显示 */
         }
+        @media(min-width: 768px) { .user-greet { display: inline-block; } }
 
-        /* 注销按钮特殊处理 */
-        .logout-form button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-family: var(--font-cute);
-            font-size: 1rem;
-        }
+        .logout-form button { background: none; border: none; cursor: pointer; font-family: var(--font-cute); font-size: 1rem; }
 
-        /* --- 主体内容 --- */
+        /* --- 主体容器 --- */
         .container {
             width: 90%;
-            max-width: 800px;
+            max-width: 900px; /* 稍微加宽一点 */
             margin: 40px auto;
             flex: 1;
         }
@@ -139,9 +120,22 @@
             background: rgba(255, 255, 255, 0.6);
             margin-top: auto;
         }
-        
-        footer span {
-            margin: 0 5px;
+
+        /* --- 🆕 模态框（弹窗）全局样式 --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(46, 139, 87, 0.4); /* 深绿半透明 */
+            backdrop-filter: blur(5px); /* 背景模糊 */
+            z-index: 2000;
+            display: none; /* 默认隐藏 */
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
         }
     </style>
 </head>
@@ -161,8 +155,7 @@
                     <button type="submit" class="nav-btn" style="color: #ff8888;">注销</button>
                 </form>
             {% else %}
-                <a href="{% url 'login' %}" class="nav-btn">登录</a>
-                <a href="#" class="nav-btn">注册</a>
+                <a href="{% url 'login' %}" class="nav-btn">登录/注册</a>
             {% endif %}
         </div>
     </nav>

@@ -1,21 +1,117 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-4">
-        <h3 class="text-center mb-4">用户登录</h3>
+
+<style>
+    /* 覆盖 container 样式以实现全屏居中 */
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh; /* 占据视口高度 */
+    }
+
+    .login-card {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 40px;
+        width: 100%;
+        max-width: 400px;
+        border-radius: 30px;
+        border: 4px solid var(--mint-light);
+        box-shadow: 0 0 30px rgba(152, 251, 152, 0.4);
+        position: relative;
+        text-align: center;
+    }
+
+    /* 顶部装饰图标 */
+    .login-icon {
+        font-size: 3rem;
+        margin-bottom: 10px;
+        display: inline-block;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .login-title {
+        color: var(--grass-green);
+        margin-bottom: 25px;
+        font-size: 1.5rem;
+    }
+
+    /* 表单控件美化 */
+    .form-group { margin-bottom: 20px; text-align: left; }
+    
+    .form-label {
+        font-weight: bold; color: var(--dark-green);
+        display: block; margin-bottom: 5px;
+    }
+
+    .form-control {
+        width: 100%; padding: 12px 15px;
+        border: 2px solid var(--mint-light);
+        border-radius: 15px;
+        font-family: var(--font-cute);
+        transition: all 0.3s;
+        outline: none;
+    }
+    .form-control:focus {
+        border-color: var(--grass-green);
+        box-shadow: 0 0 10px var(--mint-light);
+    }
+
+    /* 云朵按钮 */
+    .btn-cloud {
+        width: 100%; padding: 12px;
+        background: var(--grass-green); color: white;
+        border: none; border-radius: 50px;
+        font-size: 1.2rem; font-weight: bold; cursor: pointer;
+        box-shadow: 0 5px 0 #228B22;
+        transition: all 0.1s;
+        margin-top: 10px;
+    }
+    .btn-cloud:active {
+        transform: translateY(4px);
+        box-shadow: 0 1px 0 #228B22;
+    }
+    
+    .extra-links {
+        margin-top: 20px; font-size: 0.9rem;
+    }
+    .extra-links a { color: #88a; text-decoration: none; }
+    .extra-links a:hover { text-decoration: underline; color: var(--grass-green); }
+</style>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-icon">🔐</div>
+        <h2 class="login-title">身份验证</h2>
+        
         <form method="post" action="{% url 'login' %}">
             {% csrf_token %}
-            <div class="mb-3">
-                <label class="form-label">用户名</label>
-                <input type="text" name="username" class="form-control" required>
+            
+            <div class="form-group">
+                <label class="form-label">👤 用户名</label>
+                <input type="text" name="username" class="form-control" placeholder="请输入你的名字..." required>
             </div>
-            <div class="mb-3">
-                <label class="form-label">密码</label>
-                <input type="password" name="password" class="form-control" required>
+            
+            <div class="form-group">
+                <label class="form-label">🔑 密码</label>
+                <input type="password" name="password" class="form-control" placeholder="请输入密钥..." required>
             </div>
-            <button type="submit" class="btn btn-primary w-100">登录</button>
+            
+            <div style="text-align: left; margin-bottom: 15px; font-size: 0.9rem;">
+                <label style="cursor: pointer;">
+                    <input type="checkbox" style="accent-color: var(--grass-green);"> 记住我
+                </label>
+            </div>
+
+            <button type="submit" class="btn-cloud">☁️ 登 录</button>
+            <input type="hidden" name="next" value="{% url 'blogs:index' %}" />
         </form>
+
+        <div class="extra-links">
+            <a href="#">忘记密码?</a> &nbsp;|&nbsp; <a href="#">注册新账号</a>
+        </div>
     </div>
 </div>
+
 {% endblock content %}

@@ -3,126 +3,74 @@
 {% block content %}
 
 <style>
+    .form-wrapper {
+        padding: 20px 0;
+        animation: fadeIn 0.8s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
     .form-box {
         background: rgba(255, 255, 255, 0.9);
         padding: 40px;
         border-radius: 30px;
-        border: 5px solid var(--cyan-light); /* 外层厚边框 */
-        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-        max-width: 600px;
+        border: 5px solid var(--cyan-light);
+        box-shadow: var(--shadow-soft);
+        max-width: 700px;
         margin: 0 auto;
-        position: relative;
     }
 
-    /* 标题前的装饰 */
     .form-header {
-        text-align: center;
-        margin-bottom: 30px;
-        color: var(--grass-green);
-        position: relative;
+        text-align: center; margin-bottom: 30px;
+        color: var(--grass-green); position: relative; font-size: 1.8rem;
     }
     .form-header::after {
-        content: "🍀";
-        position: absolute;
-        top: -10px;
-        right: 20%;
-        font-size: 2rem;
-        transform: rotate(15deg);
+        content: "🍀"; position: absolute; top: -15px; right: 25%; font-size: 2rem; transform: rotate(15deg);
     }
 
-    /* --- 定制 Django 表单字段样式 --- */
-    /* 因为使用 {{ form.as_p }}，我们需要针对 p, label, input 进行样式穿透 */
-    
-    .django-form p {
-        margin-bottom: 20px;
-    }
+    /* Django 表单重写样式 */
+    .django-form p { margin-bottom: 25px; }
+    .django-form label { display: block; margin-bottom: 10px; font-weight: bold; color: var(--dark-green); }
+    .django-form label::after { content: " 🌱"; }
 
-    .django-form label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: bold;
-        color: var(--dark-green);
+    .django-form input[type="text"], .django-form textarea {
+        width: 100%; padding: 15px;
+        border: 3px solid var(--mint-bg);
+        background: #fff;
+        border-radius: 20px;
+        font-family: var(--font-cute); font-size: 1rem;
+        outline: none; transition: 0.3s;
     }
-    /* 在Label后加小表情 */
-    .django-form label::after {
-        content: " 🌱";
+    .django-form input:focus, .django-form textarea:focus {
+        border-color: var(--mint-light);
+        box-shadow: 0 0 15px var(--cyan-light);
+        transform: scale(1.01);
     }
+    .django-form textarea { min-height: 200px; resize: vertical; }
 
-    /* 输入框样式 */
-    .django-form input[type="text"],
-    .django-form textarea {
-        width: 100%;
-        padding: 12px 20px;
-        border: 2px solid var(--mint-light);
-        border-radius: 20px; /* 大圆角 */
-        background: #fdfdfd;
-        font-family: var(--font-cute);
-        font-size: 1rem;
-        outline: none;
-        transition: all 0.3s;
+    /* 云朵提交按钮 */
+    .btn-submit-cloud {
+        width: 100%; padding: 15px; margin-top: 20px;
+        background: var(--grass-green); color: white;
+        border: none; border-radius: 50px;
+        font-size: 1.3rem; font-weight: bold; cursor: pointer;
+        box-shadow: 0 8px 0 #228B22; transition: 0.1s;
     }
-
-    /* 聚焦发光效果 */
-    .django-form input:focus,
-    .django-form textarea:focus {
-        border-color: var(--grass-green);
-        transform: scale(1.02); /* 轻微放大 */
-        box-shadow: 0 0 15px var(--mint-light);
+    .btn-submit-cloud:active {
+        transform: translateY(6px); box-shadow: 0 2px 0 #228B22;
     }
-    
-    /* 文本域高度 */
-    .django-form textarea {
-        min-height: 150px;
-        resize: vertical;
-    }
-
-    /* --- 绿色云朵提交按钮 --- */
-    .btn-cloud-submit {
-        display: block;
-        width: 100%;
-        margin-top: 30px;
-        padding: 15px;
-        background: var(--grass-green);
-        color: white;
-        font-size: 1.2rem;
-        font-weight: bold;
-        border: none;
-        /* 云朵状关键：极大的圆角 */
-        border-radius: 50px; 
-        box-shadow: 0 6px 0 #228B22, 0 15px 20px rgba(50, 205, 50, 0.4); /* 立体阴影 */
-        cursor: pointer;
-        transition: all 0.1s;
-        position: relative;
-    }
-
-    /* 按钮按压效果 */
-    .btn-cloud-submit:active {
-        transform: translateY(6px); /* 向下按压 */
-        box-shadow: 0 0 0 #228B22, inset 0 5px 10px rgba(0,0,0,0.2);
-    }
-
-    /* 按钮上的云纹装饰（可选，用伪元素） */
-    .btn-cloud-submit::before {
-        content: "☁️";
-        margin-right: 10px;
-    }
-
 </style>
 
-<div class="form-box">
-    <h2 class="form-header">{{ title }}</h2>
-    
-    <form action="" method="post" class="django-form">
-        {% csrf_token %}
+<div class="form-wrapper">
+    <div class="form-box">
+        <h2 class="form-header">{{ title }}</h2>
         
-        <!-- 渲染表单字段 -->
-        {{ form.as_p }}
-        
-        <button type="submit" class="btn-cloud-submit">保 存 日 记</button>
-        
-        <!-- 隐藏的next参数 -->
-        <input type="hidden" name="next" value="{% url 'blogs:index' %}" />
-    </form>
+        <form action="" method="post" class="django-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn-submit-cloud">☁️ 保存记录</button>
+            <input type="hidden" name="next" value="{% url 'blogs:index' %}" />
+        </form>
+    </div>
 </div>
 
 {% endblock content %}

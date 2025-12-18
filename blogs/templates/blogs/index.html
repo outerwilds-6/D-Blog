@@ -3,6 +3,7 @@
 {% block content %}
 
 <style>
+    /* 标题样式 */
     .page-title {
         text-align: center;
         color: var(--grass-green);
@@ -11,47 +12,35 @@
         text-shadow: 2px 2px var(--cyan-light);
     }
 
-    /* --- 博文卡片样式 --- */
+    /* --- 卡片样式 --- */
     .post-card {
         background-color: var(--white);
         border-radius: 20px;
-        /* 使用双重边框模拟波浪或缝纫效果 */
         border: 4px dashed var(--mint-light); 
         padding: 25px;
         margin-bottom: 25px;
         position: relative;
-        box-shadow: 0 5px 0 rgba(152, 251, 152, 0.5); /* 硬阴影，更有卡通感 */
-        
-        /* 初始状态：透明且下移，为动画做准备 */
+        box-shadow: 0 5px 0 rgba(152, 251, 152, 0.5);
         opacity: 0;
         transform: translateY(50px);
         animation: slideUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        transition: all 0.3s;
     }
 
-    /* 鼠标悬停效果：晃动 + 边框变色 */
     .post-card:hover {
         border-color: var(--grass-green);
         box-shadow: 0 8px 0 rgba(50, 205, 50, 0.3);
-        animation: shake 0.5s ease-in-out; /* 注意：这里会覆盖掉 slideUp，所以仅hover触发 */
-        animation-fill-mode: none; /* 防止晃动后状态卡死 */
-        opacity: 1; /* 保持可见 */
-        transform: translateY(0); /* 保持位置 */
+        transform: translateY(-3px);
     }
 
-    /* --- 动画定义 --- */
-    @keyframes slideUp {
-        to { opacity: 1; transform: translateY(0); }
+    @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+    .card-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
     }
 
-    @keyframes shake {
-        0% { transform: rotate(0deg); }
-        25% { transform: rotate(1deg); }
-        50% { transform: rotate(0deg); }
-        75% { transform: rotate(-1deg); }
-        100% { transform: rotate(0deg); }
-    }
-
-    /* 标题样式 */
     .card-title {
         color: var(--dark-green);
         font-size: 1.4rem;
@@ -61,80 +50,230 @@
         gap: 8px;
     }
 
-    /* 信息栏 */
     .card-meta {
         font-size: 0.85rem;
-        color: #88c;
+        color: #669;
         background: var(--cyan-light);
-        display: inline-block;
         padding: 4px 12px;
         border-radius: 15px;
         margin-bottom: 15px;
-    }
-
-    .card-text {
-        line-height: 1.6;
-        color: #555;
-    }
-
-    /* 糖果按钮 */
-    .btn-read-more, .btn-edit {
         display: inline-block;
+    }
+
+    .card-text { line-height: 1.6; color: #555; }
+
+    /* --- 按钮组 --- */
+    .card-actions {
         margin-top: 15px;
-        padding: 8px 25px;
+        border-top: 2px dotted #eee;
+        padding-top: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-read-more {
         background: linear-gradient(to bottom, #fff, var(--mint-bg));
         border: 2px solid var(--mint-light);
         border-radius: 50px;
         color: var(--grass-green);
-        text-decoration: none;
-        font-size: 0.9rem;
+        padding: 8px 20px;
+        cursor: pointer;
+        font-family: var(--font-cute);
+        font-weight: bold;
         transition: all 0.2s;
     }
+    .btn-read-more:hover { background: var(--mint-light); color: white; }
 
-    .btn-read-more:hover {
-        background: var(--mint-light);
-        color: var(--white);
-        box-shadow: 0 0 10px var(--mint-light);
+    /* --- 点赞与计数 --- */
+    .interaction-box { display: flex; gap: 15px; align-items: center; }
+    
+    .like-btn {
+        background: none; border: none; cursor: pointer;
+        font-size: 1.5rem; color: #ccc;
+        transition: transform 0.2s;
+        display: flex; align-items: center; gap: 5px;
+    }
+    .like-btn:hover { transform: scale(1.2); }
+    .like-btn.liked { color: var(--grass-green); animation: pulse 0.5s; }
+    
+    .count-text {
+        font-size: 0.9rem; color: var(--grass-green); font-weight: bold;
+    }
+
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+
+    /* --- 🆕 模态框内部样式 --- */
+    .modal-window {
+        background: white;
+        width: 90%; max-width: 600px; max-height: 80vh;
+        border-radius: 25px;
+        border: 5px solid var(--mint-light);
+        display: flex; flex-direction: column;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+    .modal-header {
+        padding: 15px 20px;
+        border-bottom: 2px dashed #eee;
+        display: flex; justify-content: space-between; align-items: center;
+        background: var(--mint-bg);
+        border-radius: 20px 20px 0 0;
+    }
+    .btn-close {
+        background: none; border: none; font-size: 1.5rem; color: #ff8888; cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .btn-close:hover { transform: rotate(90deg) scale(1.1); }
+
+    .modal-body {
+        padding: 20px;
+        overflow-y: auto; /* 内容滚动 */
+        line-height: 1.8;
+        color: #444;
+    }
+
+    .modal-footer {
+        padding: 20px;
+        background: #f9fdf9;
+        border-top: 2px dashed #eee;
+        border-radius: 0 0 20px 20px;
     }
     
-    .btn-edit {
-        border-color: #ffd700;
-        color: #daa520;
-    }
-    .btn-edit:hover {
-        background: #ffd700;
-        color: #fff;
+    /* 模拟评论区 */
+    .comment-item { font-size: 0.9rem; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+    .comment-user { color: var(--grass-green); font-weight: bold; }
+    .comment-input {
+        width: 100%; padding: 10px; border-radius: 10px; border: 2px solid var(--mint-light);
+        font-family: var(--font-cute); margin-top: 10px;
     }
 </style>
 
-<h2 class="page-title">🍃 最新日记 🍃</h2>
+<h2 class="page-title">🍃 虚空知识库 🍃</h2>
 
 {% for post in posts %}
-    <!-- 使用 style 动态计算动画延迟，形成级联效果 -->
-    <div class="post-card" style="animation-delay: {{ forloop.counter0|add:1 }}00ms">
-        <h3 class="card-title">🌿 {{ post.title }}</h3>
+    <!-- 1. 外层卡片 -->
+    <div class="post-card" style="animation-delay: calc({{ forloop.counter }} * 100ms);">
+        <div class="card-header-row">
+            <h3 class="card-title">🌿 {{ post.title }}</h3>
+            {% if user == post.author %}
+                <a href="{% url 'blogs:edit_blog' post.id %}" style="font-size:0.9rem; text-decoration:none;">✏️</a>
+            {% endif %}
+        </div>
         
         <div class="card-meta">
             👤 {{ post.author.username }} &nbsp;|&nbsp; 🕒 {{ post.date_added|date:"Y-m-d" }}
         </div>
         
+        <!-- 摘要展示（截断文本） -->
         <div class="card-text">
             {{ post.text|linebreaks|truncatechars:80 }}
         </div>
 
-        <!-- 装饰性分割线 -->
-        <div style="margin-top:10px; border-top: 2px dotted #eee;"></div>
+        <div class="card-actions">
+            <!-- 查看全文按钮 -->
+            <button class="btn-read-more" onclick="showModal('post-{{ post.id }}')">
+                🍬 查看全文
+            </button>
 
-        <a href="#" class="btn-read-more">🍬 点击查看全文</a>
-        
-        {% if user == post.author %}
-            <a href="{% url 'blogs:edit_blog' post.id %}" class="btn-edit">✏️ 修改</a>
-        {% endif %}
+            <!-- 互动区域 -->
+            <div class="interaction-box">
+                <!-- 点赞 (纯前端交互演示) -->
+                <button class="like-btn" onclick="toggleLike(this)">
+                    <span>👍</span> <span class="count-text">12</span>
+                </button>
+                <div class="count-text">💬 3</div>
+            </div>
+        </div>
     </div>
+
+    <!-- 2. 隐藏的模态框 (每个帖子对应一个) -->
+    <div id="modal-post-{{ post.id }}" class="modal-overlay" onclick="closeModal(event, 'post-{{ post.id }}')">
+        <!-- 阻止点击窗口内容时关闭 -->
+        <div class="modal-window" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3 style="color:var(--dark-green)">{{ post.title }}</h3>
+                <button class="btn-close" onclick="closeModalDirect('post-{{ post.id }}')">✖️</button>
+            </div>
+            
+            <div class="modal-body">
+                <p style="color:#888; font-size:0.8rem; margin-bottom:15px;">
+                    发布于: {{ post.date_added|date:"Y-m-d H:i" }} | 作者: {{ post.author.username }}
+                </p>
+                <!-- 完整内容 -->
+                {{ post.text|linebreaks }}
+            </div>
+
+            <div class="modal-footer">
+                <h5 style="color:var(--grass-green); margin-bottom:10px;">💬 评论区 (3)</h5>
+                <!-- 静态模拟评论 -->
+                <div class="comment-item">
+                    <span class="comment-user">派蒙:</span> 哇，这就是新的知识吗！
+                </div>
+                <div class="comment-item">
+                    <span class="comment-user">旅行者:</span> 记录得很详细呢。
+                </div>
+                
+                {% if user.is_authenticated %}
+                    <input type="text" class="comment-input" placeholder="输入评论，回车发送..." />
+                {% else %}
+                    <p style="font-size:0.8rem; color:#999;">请 <a href="{% url 'login' %}">登录</a> 后发表评论。</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
 {% empty %}
-    <div class="post-card" style="text-align: center; color: #999;">
-        <p>🍂 这里空空如也，快去种下第一篇日记吧！</p>
-    </div>
+    <div style="text-align:center; padding:50px; color:#888;">🍂 知识库暂时空空如也...</div>
 {% endfor %}
+
+<!-- 3. 原生 JavaScript 交互逻辑 -->
+<script>
+    // 显示弹窗
+    function showModal(id) {
+        const modal = document.getElementById('modal-' + id);
+        modal.style.display = 'flex';
+        // 稍微延时加active类以触发透明度动画
+        setTimeout(() => modal.classList.add('active'), 10);
+        document.body.style.overflow = 'hidden'; // 禁止背景滚动
+    }
+
+    // 关闭弹窗（点击遮罩层）
+    function closeModal(event, id) {
+        if (event.target.classList.contains('modal-overlay')) {
+            closeModalDirect(id);
+        }
+    }
+
+    // 关闭弹窗（直接调用）
+    function closeModalDirect(id) {
+        const modal = document.getElementById('modal-' + id);
+        modal.classList.remove('active');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto'; // 恢复滚动
+        }, 300); // 等动画结束
+    }
+
+    // 点赞动画逻辑
+    function toggleLike(btn) {
+        // 切换 liked 类
+        btn.classList.toggle('liked');
+        
+        // 获取数字span
+        const countSpan = btn.querySelector('.count-text');
+        let count = parseInt(countSpan.innerText);
+        
+        if (btn.classList.contains('liked')) {
+            countSpan.innerText = count + 1;
+            btn.querySelector('span').innerText = "💚"; // 变心
+        } else {
+            countSpan.innerText = count - 1;
+            btn.querySelector('span').innerText = "👍"; // 变回
+        }
+    }
+</script>
 
 {% endblock content %}
