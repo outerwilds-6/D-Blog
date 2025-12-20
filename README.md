@@ -1,4 +1,4 @@
-# D-Blog (Django Garden)
+# D-Blog
 
 **D-Blog** 是一个基于 **Django** 框架开发的博客系统，拥有清新治愈的 **“虚空终端” (Nahida Theme)** 风格 UI。项目不仅实现了完整的博客内容管理功能（CRUD），还包含用户权限控制、交互式动画以及响应式的萌系前端界面。
 
